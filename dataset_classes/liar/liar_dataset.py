@@ -1,7 +1,11 @@
+from constants.liar_constants import LIAR_HEADER, PAD_TOKEN
+import os
+from torch.utils.data import Dataset, DataLoader
 import torch
-from torch.utils.data import Dataset
-
+from data_loaders.liar.padding_collate import MyCollate
+from preprocessing.liar.preprocess_liar import preprocess_liar_statements
 from preprocessing.vocab.liar_vocab import build_vocab_from_series
+import pandas as pd
 
 
 class LiarDataset(Dataset):
@@ -9,8 +13,8 @@ class LiarDataset(Dataset):
     def __init__(self, df, transform=None, target_transform=None):
         # data
         self.df = df
-        # Textual data
         self.label = df["label"]
+        # Textual data
         self.statement = df["statement"]
         self.subject = df["subject"]
         self.speaker = df["speaker"]
@@ -29,17 +33,13 @@ class LiarDataset(Dataset):
         # Create vocab for each text column
         self.statement_vocab = build_vocab_from_series(self.statement)
         self.label_vocab = build_vocab_from_series(self.label)
-        self.subjects_vocab = build_vocab_from_series(self.subjects_vocab)
-        self.speaker_vocab = build_vocab_from_series(self.speaker_vocab)
-        self.speaker_job_title_vocab = build_vocab_from_series(
-            self.speaker_job_title_vocab
-        )
-        self.state_info_vocab = build_vocab_from_series(self.state_info_vocab)
-        self.party_affiliation_vocab = build_vocab_from_series(
-            self.party_affiliation_vocab
-        )
+        self.subjects_vocab = build_vocab_from_series(self.subject)
+        self.speaker_vocab = build_vocab_from_series(self.speaker)
+        self.speaker_job_title_vocab = build_vocab_from_series(self.speaker_job_title)
+        self.state_info_vocab = build_vocab_from_series(self.state_info)
+        self.party_affiliation_vocab = build_vocab_from_series(self.party_affiliation)
         self.context_venue_or_location_vocab = build_vocab_from_series(
-            self.context_venue_or_location_vocab
+            self.context_venue_or_location
         )
 
         self.transform = transform
@@ -99,3 +99,35 @@ class LiarDataset(Dataset):
 
     def _tokenize(self, element, vocab):
         return [vocab[token] for token in element.split()]
+
+
+root_path = os.getenv("ROOT_PATH")
+train_df = pd.read_csv(
+    root_path + "train.tsv", sep="\t", header=None, names=LIAR_HEADER
+)
+valid_df = pd.read_csv(
+    root_path + "valid.tsv", sep="\t", header=None, names=LIAR_HEADER
+)
+test_df = pd.read_csv(root_path + "test.tsv", sep="\t", header=None, names=LIAR_HEADER)
+
+
+train_dataset = LiarDataset(preprocess_liar_statements(train_df))
+validation_dataset = LiarDataset(preprocess_liar_statements(valid_df))
+test_dataset = LiarDataset(preprocess_liar_statements(test_df))
+
+
+train_loader = DataLoader(
+    train_dataset,
+    batch_size=32,
+    collate_fn=MyCollate(pad_idx=train_dataset.statement_vocab[PAD_TOKEN]),
+)
+validation_loader = DataLoader(
+    validation_dataset,
+    batch_size=32,
+    collate_fn=MyCollate(pad_idx=train_dataset.statement_vocab[PAD_TOKEN]),
+)
+test_loader = DataLoader(
+    test_dataset,
+    batch_size=32,
+    collate_fn=MyCollate(pad_idx=train_dataset.statement_vocab[PAD_TOKEN]),
+)

@@ -1,6 +1,7 @@
 from torchtext.vocab import build_vocab_from_iterator
 
-from preprocessing import preprocess_text
+from constants.liar_constants import PAD_TOKEN, UNKNOWN_TOKEN
+from preprocessing.preprocess_text import preprocess_text
 from preprocessing.liar.preprocess_liar import preprocess_liar_statements
 from preprocessing.preprocessing_config import PreprocessingConfig
 
@@ -10,17 +11,10 @@ def yield_tokens(series):
         yield text.split()
 
 
-def build_vocab_from_series(
-    series, config: PreprocessingConfig = PreprocessingConfig()
-):
-    processed_text = preprocess_text(series, config)
+def build_vocab_from_series(series):
+
     liar_vocab = build_vocab_from_iterator(
-        yield_tokens(processed_text), specials=["<unk>", "<pad>"]
+        yield_tokens(series), specials=[UNKNOWN_TOKEN, PAD_TOKEN]
     )
-    liar_vocab.set_default_index(liar_vocab["<unk>"])
+    liar_vocab.set_default_index(liar_vocab[UNKNOWN_TOKEN])
     return liar_vocab
-
-
-# df = preprocess_liar_statements(train_df)
-# c
-# liar_vocab.set_default_index(liar_vocab['<unk>'])

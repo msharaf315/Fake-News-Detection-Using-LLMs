@@ -9,6 +9,7 @@ class MyCollate:
         self.pad_idx = pad_idx
 
     def __call__(self, batch):
+        print("im being called!")
         #    Input batch is
         # [ {
         #     "id": statement_id,
@@ -31,24 +32,21 @@ class MyCollate:
         # by changing the get item function in the dataset class.
 
         # numerical counts
-        statement_ids = [x["id"] for x in batch]
+        # statement_ids = [x["id"] for x in batch]
         barely_true_counts = [x["barely_true_count"] for x in batch]
         false_counts = [x["false_count"] for x in batch]
         half_true_counts = [x["half_true_count"] for x in batch]
         mostly_true_counts = [x["mostly_true_count"] for x in batch]
         pants_on_fire_counts = [x["pants_on_fire_count"] for x in batch]
-
         # tokenized text
         statements = [x["statement"] for x in batch]
         subjects = [x["subject"] for x in batch]
-        speakers = [x["speaker_"] for x in batch]
+        speakers = [x["speaker"] for x in batch]
         speaker_job_titles = [x["speaker_job_title"] for x in batch]
         state_infos = [x["state_info"] for x in batch]
         party_affiliations = [x["party_affiliation"] for x in batch]
         context_venue_or_locations = [x["context_venue_or_location"] for x in batch]
-
         labels = [x["label"] for x in batch]
-
         # Pad text sequences
         paded_statements = pad_sequence(
             statements, batch_first=True, padding_value=self.pad_idx
@@ -71,9 +69,7 @@ class MyCollate:
         paded_context_venue_or_locations = pad_sequence(
             context_venue_or_locations, batch_first=True, padding_value=self.pad_idx
         )
-
         return {
-            "id": torch.tensor(statement_ids),
             "barely_true_count": torch.tensor(barely_true_counts),
             "false_count": torch.tensor(false_counts),
             "half_true_count": torch.tensor(half_true_counts),

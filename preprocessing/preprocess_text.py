@@ -1,11 +1,18 @@
 import string
+from constants.liar_constants import UNKNOWN_TOKEN
 from preprocessing.preprocessing_config import PreprocessingConfig
 from nltk.corpus import stopwords
 import nltk
 import re
+import numpy as np
 
 
 def preprocess_text(df_series, config: PreprocessingConfig):
+    df_series = df_series.astype("string")
+
+    if config.fill_na:
+        df_series = df_series.fillna(value=UNKNOWN_TOKEN)
+
     if config.remove_quotations:
         df_series = df_series.apply(lambda x: re.sub("'", "", x))
 

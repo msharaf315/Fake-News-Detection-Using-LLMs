@@ -24,3 +24,6 @@ LIAR_HEADER = [
     "pants_on_fire_counts",
     "context_venue_or_location",
 ]
+
+PAD_TOKEN = "<pad>"
+UNKNOWN_TOKEN = "<unk>"
