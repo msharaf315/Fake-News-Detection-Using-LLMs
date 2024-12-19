@@ -102,6 +102,7 @@ class LiarDataset(Dataset):
 
 
 root_path = os.getenv("ROOT_PATH")
+batch_size = 32
 train_df = pd.read_csv(
     root_path + "train.tsv", sep="\t", header=None, names=LIAR_HEADER
 )
@@ -118,16 +119,16 @@ test_dataset = LiarDataset(preprocess_liar_statements(test_df))
 
 train_loader = DataLoader(
     train_dataset,
-    batch_size=32,
+    batch_size=batch_size,
     collate_fn=MyCollate(pad_idx=train_dataset.statement_vocab[PAD_TOKEN]),
 )
 validation_loader = DataLoader(
     validation_dataset,
-    batch_size=32,
+    batch_size=batch_size,
     collate_fn=MyCollate(pad_idx=train_dataset.statement_vocab[PAD_TOKEN]),
 )
 test_loader = DataLoader(
     test_dataset,
-    batch_size=32,
+    batch_size=batch_size,
     collate_fn=MyCollate(pad_idx=train_dataset.statement_vocab[PAD_TOKEN]),
 )

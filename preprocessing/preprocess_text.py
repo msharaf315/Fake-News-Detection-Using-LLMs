@@ -12,6 +12,7 @@ def preprocess_text(df_series, config: PreprocessingConfig):
 
     if config.fill_na:
         df_series = df_series.fillna(value=UNKNOWN_TOKEN)
+        df_series = df_series.replace("none", UNKNOWN_TOKEN)
 
     if config.remove_quotations:
         df_series = df_series.apply(lambda x: re.sub("'", "", x))

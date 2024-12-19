@@ -1,6 +1,8 @@
 import torch
 from torch.nn.utils.rnn import pad_sequence
 
+from constants.liar_constants import LIAR_LABELS_TO_INDEX
+
 
 # We do the padding here because the sentences in each batch should have the same dimension.
 class MyCollate:
@@ -46,7 +48,8 @@ class MyCollate:
         state_infos = [x["state_info"] for x in batch]
         party_affiliations = [x["party_affiliation"] for x in batch]
         context_venue_or_locations = [x["context_venue_or_location"] for x in batch]
-        labels = [x["label"] for x in batch]
+        labels = [LIAR_LABELS_TO_INDEX[x["label"]] for x in batch]
+
         # Pad text sequences
         paded_statements = pad_sequence(
             statements, batch_first=True, padding_value=self.pad_idx
@@ -82,5 +85,5 @@ class MyCollate:
             "state_info": paded_state_infos,
             "party_affiliation": paded_party_affiliations,
             "context_venue_or_location": paded_context_venue_or_locations,
-            "label": labels,
+            "label": torch.tensor(labels),
         }
