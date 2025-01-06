@@ -22,13 +22,13 @@ class LiarDataset(Dataset):
         self.state_info = df["state_info"]
         self.party_affiliation = df["party_affiliation"]
         self.context_venue_or_location = df["context_venue_or_location"]
-        # numerical data
         self.id = df["id"]
-        self.barely_true_count = df["barely_true_counts"]
-        self.false_count = df["false_counts"]
-        self.half_true_count = df["half_true_counts"]
-        self.mostly_true_count = df["mostly_true_counts"]
-        self.pants_on_fire_count = df["pants_on_fire_counts"]
+        # numerical data
+        self.barely_true_count = df["barely_true_counts"].astype(float)
+        self.false_count = df["false_counts"].astype(float)
+        self.half_true_count = df["half_true_counts"].astype(float)
+        self.mostly_true_count = df["mostly_true_counts"].astype(float)
+        self.pants_on_fire_count = df["pants_on_fire_counts"].astype(float)
 
         # Create vocab for each text column
         self.statement_vocab = build_vocab_from_series(self.statement)
@@ -115,20 +115,3 @@ test_df = pd.read_csv(root_path + "test.tsv", sep="\t", header=None, names=LIAR_
 train_dataset = LiarDataset(preprocess_liar_statements(train_df))
 validation_dataset = LiarDataset(preprocess_liar_statements(valid_df))
 test_dataset = LiarDataset(preprocess_liar_statements(test_df))
-
-
-train_loader = DataLoader(
-    train_dataset,
-    batch_size=batch_size,
-    collate_fn=MyCollate(pad_idx=train_dataset.statement_vocab[PAD_TOKEN]),
-)
-validation_loader = DataLoader(
-    validation_dataset,
-    batch_size=batch_size,
-    collate_fn=MyCollate(pad_idx=train_dataset.statement_vocab[PAD_TOKEN]),
-)
-test_loader = DataLoader(
-    test_dataset,
-    batch_size=batch_size,
-    collate_fn=MyCollate(pad_idx=train_dataset.statement_vocab[PAD_TOKEN]),
-)

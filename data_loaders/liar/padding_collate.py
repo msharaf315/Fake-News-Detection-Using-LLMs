@@ -11,7 +11,6 @@ class MyCollate:
         self.pad_idx = pad_idx
 
     def __call__(self, batch):
-        print("im being called!")
         #    Input batch is
         # [ {
         #     "id": statement_id,

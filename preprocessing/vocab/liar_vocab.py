@@ -1,9 +1,6 @@
 from torchtext.vocab import build_vocab_from_iterator
 
 from constants.liar_constants import PAD_TOKEN, UNKNOWN_TOKEN
-from preprocessing.preprocess_text import preprocess_text
-from preprocessing.liar.preprocess_liar import preprocess_liar_statements
-from preprocessing.preprocessing_config import PreprocessingConfig
 
 
 def yield_tokens(series):
